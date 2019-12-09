@@ -27,7 +27,8 @@ public class SimulationEditor {
     public void draw(Ball ball) {
         graphicsContext.setFill(ball.getColor());
         double radius = ball.getRadius();
-        graphicsContext.fillOval(ball.getX()- radius, ball.getY()- radius, radius *2, radius*2);
+        double yCavasCoordinate =  -(ball.getY()-canvas.getHeight());
+        graphicsContext.fillOval(ball.getX()- radius, yCavasCoordinate- radius, radius *2, radius*2);
     }
 
     public void drawAll(){
@@ -36,8 +37,24 @@ public class SimulationEditor {
                 draw(ball);
     }
 
-    public void clear() {
+    public void clearView() {
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
+    public BallRepo getBallRepo() {
+        return ballRepo;
+    }
+
+    public void clearRepo() {
+        ballRepo = new BallRepo();
+    }
+
+    public void drawArrow(Ball currentBall) {
+        double x = currentBall.getX();
+        double y = currentBall.getY();
+
+        graphicsContext.setStroke(Color.RED);
+        graphicsContext.strokeLine(x,y,x+50,y+50);
+
+    }
 }

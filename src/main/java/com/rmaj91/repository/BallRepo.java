@@ -29,4 +29,8 @@ public class BallRepo {
     public boolean isEmpty() {
         return balls.isEmpty();
     }
+
+    public void addAll(BallRepo ballRepo) {
+        balls.addAll(ballRepo.getBalls());
+    }
 }
