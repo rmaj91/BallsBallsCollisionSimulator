@@ -5,4 +5,5 @@ com\rmaj91\App.class
 module-info.class
 com\rmaj91\repository\BallRepo.class
 com\rmaj91\PrimaryController.class
+com\rmaj91\model\SimulationEditor.class
 com\rmaj91\SecondaryController.class

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<StackPane maxHeight="400.0" maxWidth="600.0" minHeight="400.0" minWidth="600.0" style="-fx-background-color: #999999;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.rmaj91.PrimaryController">
+   <children>
+      <Label text="Maju Collision Simulator v.1.0." StackPane.alignment="TOP_CENTER">
+         <StackPane.margin>
+            <Insets top="100.0" />
+         </StackPane.margin>
+         <font>
+            <Font name="System Bold" size="36.0" />
+         </font>
+      </Label>
+      <Button fx:id="startSimulationBttn" onAction="#switchToSecondary" prefHeight="40.0" prefWidth="180.0" text="Start Simulation" StackPane.alignment="CENTER">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Button>
+      <Button fx:id="exitBttn" onAction="#systemExit" prefHeight="40.0" prefWidth="180.0" text="Exit" StackPane.alignment="CENTER">
+         <font>
+            <Font size="18.0" />
+         </font>
+         <StackPane.margin>
+            <Insets top="140.0" />
+         </StackPane.margin>
+      </Button>
+      <Label text="github.com/rmaj91/CollisionSimulator" StackPane.alignment="BOTTOM_CENTER">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+   </children>
+</StackPane>
