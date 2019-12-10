@@ -16,10 +16,18 @@ import javafx.util.Duration;
 public class Simulation {
     private BallRepo ballRepo;
     private boolean simulationFlag;
-    private Canvas canvas;
+
+    //=============================================================================================
+    // Static Properties
+    //=============================================================================================
+    public static final double LEFT_WALL_ABS = 0.85;
+    public static final double RIGHT_WALL_ABS = 0.85;
+    public static final double FLOOR_ABS = 0.85;
+
+    public static Canvas canvas;
     private GraphicsContext graphicsContext;
     private double earthAcceleration;
-    public static final double FPS = 50;
+    public static final double FPS = 100;
     private Timeline timelineDraw;
     private AnimationTimer animationTimer;
     private long startNanoTime;
@@ -32,12 +40,13 @@ public class Simulation {
         this.canvas = canvas;
         this.graphicsContext = canvas.getGraphicsContext2D();
         timelineDraw = new Timeline(new KeyFrame(Duration.millis(1000/ FPS), e->{
-            for (Ball ball : ballRepo.getBalls()) {
-                ball.moveBall(1000/ FPS);
+            if(!this.ballRepo.isEmpty()){
+                for (Ball ball : this.ballRepo.getBalls()) {
+                    ball.moveBall(1000/ FPS);
+                }
+                clearView();
+                drawAll();
             }
-            clearView();
-            drawAll();
-            System.out.println("fps");
         }));
         timelineDraw.setCycleCount(Timeline.INDEFINITE);
 
@@ -64,16 +73,16 @@ public class Simulation {
 
     }
 
+
+
     public void stop(){
         timelineDraw.stop();
         simulationFlag = false;
+
         graphicsContext.setLineWidth(2);
         Font theFont = Font.font( "Times New Roman", FontWeight.BOLD, 48 );
         graphicsContext.setFont( theFont );
         graphicsContext.setTextAlign(TextAlignment.CENTER);
-        graphicsContext.setTextBaseline(VPos.CENTER);
-        graphicsContext.setFill( Color.RED );
-        graphicsContext.fillText( "Simulation Paused!", canvas.getWidth()/2, canvas.getHeight()/2 );
         graphicsContext.setStroke( Color.BLACK );
         graphicsContext.strokeText( "Simulation Paused!", canvas.getWidth()/2, canvas.getHeight()/2 );
     }
@@ -85,10 +94,12 @@ public class Simulation {
     }
 
     public void draw(Ball ball){
+        if(ball !=null){
         graphicsContext.setFill(ball.getColor());
         double radius = ball.getRadius();
         double yCavasCoordinate = -(ball.getY() - canvas.getHeight());
         graphicsContext.fillOval(ball.getX() - radius, yCavasCoordinate - radius, radius * 2, radius * 2);
+        }
     }
     public void clearView(){
         graphicsContext.clearRect(0,0,canvas.getWidth(),canvas.getHeight());
@@ -118,5 +129,9 @@ public class Simulation {
 
     public BallRepo getBallRepo() {
         return ballRepo;
+    }
+
+    public static Canvas getCanvas() {
+        return canvas;
     }
 }

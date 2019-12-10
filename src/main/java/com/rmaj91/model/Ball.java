@@ -8,9 +8,8 @@ public class Ball {
     //=============================================================================================
     // Static Properties
     //=============================================================================================
-    private static double E_ABSORBTION_X = 0.85;
-    private static double E_ABSORBTION_Y = 0.85;
-    private static double globalEarthAcceleration = 100;
+    private static double E_ABSORBTION = 0.9;
+    public static double globalEarthAcceleration = 500;
     //=============================================================================================
     // Properties
     //=============================================================================================
@@ -41,12 +40,9 @@ public class Ball {
     //=============================================================================================
 
     public void moveBall(double milliseconds) {
-        double velocityX = velocity.getX();
-        double velocityY = velocity.getY();
-
-        getNewCoordinates(milliseconds, velocityX, velocityY);
-        checkWallsCollisions(velocityX, velocityY);
-        calculateNewVelocity(milliseconds, velocityY);
+        getNewCoordinates(milliseconds);
+        checkWallsCollisions();
+        calculateNewVelocity(milliseconds);
     }
 
 
@@ -83,20 +79,27 @@ public class Ball {
     //=============================================================================================
     // Private Methods
     //=============================================================================================
-    private void getNewCoordinates(double milliseconds, double velocityX, double velocityY) {
-        this.x += velocityX * milliseconds / 1000;
-        this.y += velocityY * milliseconds / 1000;
+    private void getNewCoordinates(double milliseconds) {
+        this.x += velocity.getX() * milliseconds / 1000;
+        this.y += velocity.getY() * milliseconds / 1000;
     }
 
-    private void checkWallsCollisions(double velocityX, double velocityY) {
-        if (x < 0 || x > App.C_WIDTH)
-            velocity.setX(-velocityX * E_ABSORBTION_X);
-        if (y < 0)
-            velocity.setY(-velocityY * E_ABSORBTION_Y);
+    private void checkWallsCollisions() {
+        if ((x - radius < 0 && velocity.getX() < 0)) {
+            velocity.setX(-velocity.getX() * Ball.E_ABSORBTION*Simulation.LEFT_WALL_ABS);
+            //x = radius;
+        } else if (x + radius > Simulation.getCanvas().getWidth() && velocity.getX() > 0) {
+            velocity.setX(-velocity.getX() * Ball.E_ABSORBTION*Simulation.RIGHT_WALL_ABS);
+           // x = Simulation.getCanvas().getWidth() - radius;
+        }
+        if (y - radius < 0 && velocity.getY() < 0) {
+            y = radius;
+            velocity.setY(-velocity.getY() * Ball.E_ABSORBTION*Simulation.FLOOR_ABS);
+        }
     }
 
-    private void calculateNewVelocity(double milliseconds, double velocityY) {
-        velocity.setY(velocityY - localEarthAcceleration * milliseconds / 1000);
+    private void calculateNewVelocity(double milliseconds) {
+        velocity.setY(velocity.getY() - localEarthAcceleration * milliseconds / 1000);
     }
 
     public void setX(double x) {

@@ -2,14 +2,14 @@ package com.rmaj91.repository;
 
 import com.rmaj91.model.Ball;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+
 
 public class BallRepo {
-    List<Ball> balls;
+    HashSet<Ball> balls;
 
     public BallRepo() {
-        balls = new LinkedList<>();
+        balls = new  HashSet<>();
     }
 
     public void add(Ball ball){
@@ -17,7 +17,7 @@ public class BallRepo {
     }
 
 
-    public List<Ball> getBalls() {
+    public HashSet<Ball> getBalls() {
         return balls;
     }
 

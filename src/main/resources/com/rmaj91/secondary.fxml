@@ -129,7 +129,7 @@
          <children>
             <Button fx:id="simulationBtn" focusTraversable="false" mnemonicParsing="false" onAction="#simulationBtnClicked" text="Start Simulation" StackPane.alignment="CENTER">
                <font>
-                  <Font size="18.0" />
+                  <Font name="System Bold" size="18.0" />
                </font>
                <StackPane.margin>
                   <Insets />
