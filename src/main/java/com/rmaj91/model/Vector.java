@@ -1,6 +1,7 @@
 package com.rmaj91.model;
 
 public class Vector {
+
     private double x;
     private double y;
 

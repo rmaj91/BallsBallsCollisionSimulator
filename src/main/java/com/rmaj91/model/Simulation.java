@@ -14,25 +14,29 @@ import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
 public class Simulation {
-    private BallRepo ballRepo;
-    private boolean simulationFlag;
 
     //=============================================================================================
     // Static Properties
     //=============================================================================================
-    public static final double LEFT_WALL_ABS = 0.85;
-    public static final double RIGHT_WALL_ABS = 0.85;
-    public static final double FLOOR_ABS = 0.85;
 
+    public static final double LEFT_WALL_ABS = 0.9;
+    public static final double RIGHT_WALL_ABS = 0.9;
+    public static final double FLOOR_ABS = 0.8;
+    //=============================================================================================
+    // Properties/Dependencies
+    //=============================================================================================
+    private BallRepo ballRepo;
+    private boolean simulationFlag;
     public static Canvas canvas;
     private GraphicsContext graphicsContext;
     private double earthAcceleration;
-    public static final double FPS = 100;
+    public static final double FPS = 60;
+    public static final double CALC_PER_SEC = 200;
     private Timeline timelineDraw;
     private AnimationTimer animationTimer;
     private long startNanoTime;
 
-    // earth acc tutaj
+
 
     public Simulation(BallRepo ballRepo, Canvas canvas) {
         simulationFlag = false;
@@ -40,16 +44,13 @@ public class Simulation {
         this.canvas = canvas;
         this.graphicsContext = canvas.getGraphicsContext2D();
         timelineDraw = new Timeline(new KeyFrame(Duration.millis(1000/ FPS), e->{
-            if(!this.ballRepo.isEmpty()){
                 for (Ball ball : this.ballRepo.getBalls()) {
-                    ball.moveBall(1000/ FPS);
+                    ball.moveBall(1000/ FPS,this.ballRepo);
                 }
                 clearView();
                 drawAll();
-            }
         }));
         timelineDraw.setCycleCount(Timeline.INDEFINITE);
-
 
 //        animationTimer = new AnimationTimer() {
 //            @Override
@@ -64,13 +65,6 @@ public class Simulation {
         clearView();
         drawAll();
         timelineDraw.play();
-
-        startNanoTime = System.nanoTime();
-
-
-
-
-
     }
 
 
@@ -78,7 +72,6 @@ public class Simulation {
     public void stop(){
         timelineDraw.stop();
         simulationFlag = false;
-
         graphicsContext.setLineWidth(2);
         Font theFont = Font.font( "Times New Roman", FontWeight.BOLD, 48 );
         graphicsContext.setFont( theFont );
@@ -88,18 +81,15 @@ public class Simulation {
     }
 
     public void drawAll(){
-        if (!ballRepo.isEmpty())
             for (Ball ball : ballRepo.getBalls())
                 draw(ball);
     }
 
     public void draw(Ball ball){
-        if(ball !=null){
         graphicsContext.setFill(ball.getColor());
         double radius = ball.getRadius();
         double yCavasCoordinate = -(ball.getY() - canvas.getHeight());
         graphicsContext.fillOval(ball.getX() - radius, yCavasCoordinate - radius, radius * 2, radius * 2);
-        }
     }
     public void clearView(){
         graphicsContext.clearRect(0,0,canvas.getWidth(),canvas.getHeight());
@@ -113,6 +103,7 @@ public class Simulation {
         return simulationFlag;
     }
 
+    // todo make que for adding, so add in periods between calculating new positions
     public void add(Ball ball) {
         ballRepo.add(ball);
     }
@@ -121,10 +112,6 @@ public class Simulation {
         for (Ball ball : ballRepo.getBalls()) {
             this.ballRepo.add(ball);
         }
-    }
-
-    public void setEarthAcceleration(double earthAcceleration) {
-        this.earthAcceleration = earthAcceleration;
     }
 
     public BallRepo getBallRepo() {

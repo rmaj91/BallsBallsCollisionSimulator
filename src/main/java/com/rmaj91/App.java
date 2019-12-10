@@ -13,18 +13,8 @@ import java.io.IOException;
  */
 public class App extends Application {
 
-    //=============================================================================================
-    // CONSTANTS
-    //=============================================================================================
-    public static final int C_WIDTH = 1280;
-    public static final int C_HEIGHT = 500;
-
-    public static final int STAGE_WIDTH = 1280;
-    public static final int STAGE_HEIGHT = 600;
-
 
     public static Stage stage;
-
     private static Scene scene;
 
     @Override

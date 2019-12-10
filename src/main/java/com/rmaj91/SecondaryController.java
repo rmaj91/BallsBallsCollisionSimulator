@@ -62,8 +62,6 @@ public class SecondaryController implements Initializable {
     private double yFromClick;
 
 
-
-
     //=============================================================================================
     // EVENTS METHODS
     //=============================================================================================
@@ -71,31 +69,20 @@ public class SecondaryController implements Initializable {
     private void createBall(MouseEvent event) {
         xFromClick = event.getSceneX();
         yFromClick = -(event.getSceneY() - simulatorCanvas.getHeight());
-        if (event.getButton().name().equals("PRIMARY")) {
-
-            if (xFromClick - ballRadius < 0)
-                xFromClick = ballRadius;
-            if (xFromClick + ballRadius > simulatorCanvas.getWidth())
-                xFromClick = simulatorCanvas.getWidth() - ballRadius;
-            if (yFromClick + ballRadius > simulatorCanvas.getHeight())
-                yFromClick = simulatorCanvas.getHeight() - ballRadius;
-
+        if (event.getButton().name().equals("PRIMARY") && !isBallHere(xFromClick, yFromClick)) {
+            xFromClickCorrect();
             radiusLbl.setText(String.format("%.1f px", ballRadius));
             speedVectorLbl.setText("0.0, 0.0");
             ballCoordinatesLbl.setText(String.format("%.1f, %.1f", xFromClick, yFromClick));
             Color color = colorPicker.getValue();
             currentBall = new Ball(xFromClick, yFromClick, ballRadius, color);
             simulationEditor.add(currentBall);
-            System.out.println("Created: " + currentBall.toString());
-        }
-        else if (event.getButton().name().equals("SECONDARY")) {
+        } else if (event.getButton().name().equals("SECONDARY")) {
             simulationEditor.remove(xFromClick, yFromClick);
         }
         simulationEditor.clearView();
         simulationEditor.drawAll();
     }
-
-
 
     @FXML
     private void displayCoordinates(MouseEvent event) {
@@ -105,44 +92,44 @@ public class SecondaryController implements Initializable {
 
     @FXML
     private void setBallRadius(KeyEvent event) {
-            String kChar = event.getText();
-            if(kChar.equals(" "))
-                simulationBtnClicked();
-            else if (kChar.equalsIgnoreCase("W") && ballRadius < MAX_BALL_RADIUS)
-                ballRadius++;
-            else if (kChar.equalsIgnoreCase("S") && ballRadius > MIN_BALL_RADIUS)
-                ballRadius--;
-            if (currentBall != null) {
-                currentBall.setRadius(ballRadius);
-                simulationEditor.clearView();
-                simulationEditor.drawAll();
-            }
-            radiusLbl.setText(String.format("%.1f px", ballRadius));
+        String kChar = event.getText();
+        if (kChar.equals(" "))
+            simulationBtnClicked();
+        else if (kChar.equalsIgnoreCase("W") && ballRadius < MAX_BALL_RADIUS)
+            ballRadius++;
+        else if (kChar.equalsIgnoreCase("S") && ballRadius > MIN_BALL_RADIUS)
+            ballRadius--;
+
+        if (currentBall != null) {
+            currentBall.setRadius(ballRadius);
+            simulationEditor.clearView();
+            simulationEditor.drawAll();
+        }
+        radiusLbl.setText(String.format("%.1f px", ballRadius));
     }
 
     @FXML
     private void setBallVelocity(MouseEvent event) {
         if (currentBall != null) {
+            int velocityMultiplier = 8;
             double velocityX = xFromClick - event.getSceneX();
             double velocityY = yFromClick + event.getSceneY() - simulatorCanvas.getHeight();
-            currentBall.getVelocity().setX(velocityX * 6);
-            currentBall.getVelocity().setY(velocityY * 6);
-            speedVectorLbl.setText(String.format("%.1f, %.1f", velocityX, velocityY));
+            currentBall.getVelocity().setX(velocityX * velocityMultiplier);
+            currentBall.getVelocity().setY(velocityY * velocityMultiplier);
+            speedVectorLbl.setText(String.format("%.1f, %.1f", velocityX*velocityMultiplier, velocityY*velocityMultiplier));
             simulationEditor.clearView();
             simulationEditor.drawAll();
             simulationEditor.drawVector(currentBall);
         }
     }
 
-
     @FXML
     private void clearBallRef() {
-        if (simulation.isSimulationFlag() && currentBall !=null) {
+        if (simulation.isSimulationFlag() && currentBall != null) {
             simulation.add(currentBall);
             simulationEditor.clearView();
             simulationEditor.clearRepo();
-        } else if (currentBall != null){
-            simulationEditor.add(currentBall);
+        } else if (currentBall != null) {
         }
         currentBall = null;
     }
@@ -163,8 +150,7 @@ public class SecondaryController implements Initializable {
         } else {
             simulation.addAll(simulationEditor.getBallRepo());
             simulationEditor.clearView();
-            simulationEditor.clearRepo();;
-
+            simulationEditor.clearRepo();
             simulation.start();
             simulationBtn.setText("Stop Simulation");
         }
@@ -184,17 +170,43 @@ public class SecondaryController implements Initializable {
         setBackgroundSizeListeners();
         setEarthAccValueFactory();
         colorPicker.setValue(Color.DARKGREY);
-
-        earthAcceleration.valueProperty().addListener(e -> {
-            Ball.globalEarthAcceleration = earthAcceleration.getValue();
-        });
+        eartAccSpinnerListenerInit();
     }
+
+
 
 
     //=============================================================================================
     // Private Methods
     //=============================================================================================
+    private boolean isBallHere(double xFromClick, double yFromClick) {
+        BallRepo ballRepo = simulationEditor.getBallRepo();
+        boolean isBallFound = false;
+        for (Ball ball : ballRepo.getBalls()) {
+            double x1 = ball.getX();
+            double y1 = ball.getY();
+            double distance = Math.sqrt((x1 - xFromClick) * (x1 - xFromClick) + (y1 - yFromClick) * (y1 - yFromClick));
+            if (ball.getRadius() + ballRadius > distance) {
+                isBallFound = true;
+                break;
+            }
+        }
+        return isBallFound;
+    }
 
+    private void eartAccSpinnerListenerInit() {
+        earthAcceleration.valueProperty().addListener(e -> {
+            Ball.globalEarthAcceleration = earthAcceleration.getValue();
+        });
+    }
+    private void xFromClickCorrect() {
+        if (xFromClick - ballRadius < 0)
+            xFromClick = ballRadius;
+        if (xFromClick + ballRadius > simulatorCanvas.getWidth())
+            xFromClick = simulatorCanvas.getWidth() - ballRadius;
+        if (yFromClick < ballRadius)
+            yFromClick = ballRadius;
+    }
     private void setBackgroundSizeListeners() {
         background.heightProperty().addListener(e -> {
             double height = background.getHeight();
@@ -202,7 +214,6 @@ public class SecondaryController implements Initializable {
             simulatorEditorCanvas.setHeight(height);
             ballRepo.clear();
             simulation.clearView();
-            System.out.println("deleting balls and clearing canvas...");
         });
 
         background.widthProperty().addListener(e -> {
@@ -211,7 +222,6 @@ public class SecondaryController implements Initializable {
             simulatorEditorCanvas.setWidth(width);
             ballRepo.clear();
             simulation.clearView();
-            System.out.println("deleting balls and clearing canvas...");
         });
     }
 

@@ -17,18 +17,15 @@ public class SimulationEditor {
         ballRepo.add(ball);
     }
 
-    //todo
     public void remove(double x, double y) {
-        if (!ballRepo.isEmpty()) {
-            for (Ball ball : ballRepo.getBalls()) {
-                double x1 = ball.getX();
-                double y1 = ball.getY();
-                double distance = Math.sqrt((x1 - x) * (x1 - x) + (y1 - y) * (y1 - y));
-                if (ball.getRadius() > distance) {
-                    System.out.println("removing: " + ball);
-                    ballRepo.getBalls().remove(ball);
-                    break;
-                }
+        for (Ball ball : ballRepo.getBalls()) {
+            double x1 = ball.getX();
+            double y1 = ball.getY();
+            double distance = Math.sqrt((x1 - x) * (x1 - x) + (y1 - y) * (y1 - y));
+            if (ball.getRadius() > distance) {
+                System.out.println("removing: " + ball);
+                ballRepo.getBalls().remove(ball);
+                break;
             }
         }
     }
@@ -47,11 +44,10 @@ public class SimulationEditor {
     }
 
     public void drawAll() {
-        if (!this.ballRepo.isEmpty())
-            for (Ball ball : this.ballRepo.getBalls()) {
-                draw(ball);
-                drawVector(ball);
-            }
+        for (Ball ball : this.ballRepo.getBalls()) {
+            draw(ball);
+            drawVector(ball);
+        }
     }
 
     public void clearView() {
