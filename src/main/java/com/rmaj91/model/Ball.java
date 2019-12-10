@@ -10,7 +10,7 @@ public class Ball {
     //=============================================================================================
     private static double E_ABSORBTION_X = 0.85;
     private static double E_ABSORBTION_Y = 0.85;
-    private static int earthAcceleration = 100;
+    private static double globalEarthAcceleration = 100;
     //=============================================================================================
     // Properties
     //=============================================================================================
@@ -20,6 +20,7 @@ public class Ball {
     private int mass;
     private Vector velocity;
     private Color color;
+    private double localEarthAcceleration = 100;
 
 
     //=============================================================================================
@@ -30,15 +31,16 @@ public class Ball {
         this.y = y;
         this.radius = radius;
         this.color = color;
-        this.mass = (int)Math.pow(radius,3);
-        this.velocity = new Vector(0,0);
+        this.mass = (int) Math.pow(radius, 3);
+        this.velocity = new Vector(0, 0);
+        this.localEarthAcceleration = globalEarthAcceleration;
     }
 
     //=============================================================================================
     // Public Methods
     //=============================================================================================
 
-    public void moveBall(int milliseconds) {
+    public void moveBall(double milliseconds) {
         double velocityX = velocity.getX();
         double velocityY = velocity.getY();
 
@@ -55,7 +57,7 @@ public class Ball {
 
     public void setRadius(double radius) {
         this.radius = radius;
-        this.mass = (int)Math.pow(radius,3);
+        this.mass = (int) Math.pow(radius, 3);
     }
 
     public double getRadius() {
@@ -74,23 +76,27 @@ public class Ball {
         return y;
     }
 
+    public static void setGlobalEarthAcceleration(double globalEarthAcceleration) {
+        Ball.globalEarthAcceleration = globalEarthAcceleration;
+    }
+
     //=============================================================================================
     // Private Methods
     //=============================================================================================
-    private void getNewCoordinates(int milliseconds, double velocityX, double velocityY) {
+    private void getNewCoordinates(double milliseconds, double velocityX, double velocityY) {
         this.x += velocityX * milliseconds / 1000;
         this.y += velocityY * milliseconds / 1000;
     }
 
     private void checkWallsCollisions(double velocityX, double velocityY) {
         if (x < 0 || x > App.C_WIDTH)
-            velocity.setX(-velocityX*E_ABSORBTION_X);
+            velocity.setX(-velocityX * E_ABSORBTION_X);
         if (y < 0)
-            velocity.setY(-velocityY*E_ABSORBTION_Y);
+            velocity.setY(-velocityY * E_ABSORBTION_Y);
     }
 
-    private void calculateNewVelocity(int milliseconds, double velocityY) {
-        velocity.setY(velocityY - earthAcceleration * milliseconds / 1000);
+    private void calculateNewVelocity(double milliseconds, double velocityY) {
+        velocity.setY(velocityY - localEarthAcceleration * milliseconds / 1000);
     }
 
     public void setX(double x) {

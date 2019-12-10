@@ -4,6 +4,7 @@ import com.rmaj91.repository.BallRepo;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.ArcType;
 
 public class SimulationEditor {
     private GraphicsContext graphicsContext;
@@ -14,7 +15,16 @@ public class SimulationEditor {
         ballRepo.add(ball);
     }
 
-    public void remove(int index) {
+    //todo
+    public void remove(double x, double y) {
+//        for (Ball ball : ballRepo.getBalls()) {
+//            double x1 = ball.getX();
+//            double y1 = ball.getY();
+//            double distance = Math.sqrt((x1 - x) * (x1 - x) + (y1 - y) * (y1 - y));
+//            if (ball.getRadius() > distance)
+//                ballRepo.getBalls().remove(ball);
+//            break;
+//        }
 
     }
 
@@ -27,14 +37,16 @@ public class SimulationEditor {
     public void draw(Ball ball) {
         graphicsContext.setFill(ball.getColor());
         double radius = ball.getRadius();
-        double yCavasCoordinate =  -(ball.getY()-canvas.getHeight());
-        graphicsContext.fillOval(ball.getX()- radius, yCavasCoordinate- radius, radius *2, radius*2);
+        double yCavasCoordinate = -(ball.getY() - canvas.getHeight());
+        graphicsContext.fillOval(ball.getX() - radius, yCavasCoordinate - radius, radius * 2, radius * 2);
     }
 
-    public void drawAll(){
+    public void drawAll() {
         if (!ballRepo.isEmpty())
-            for (Ball ball : ballRepo.getBalls())
+            for (Ball ball : ballRepo.getBalls()) {
                 draw(ball);
+                drawVector(ball);
+            }
     }
 
     public void clearView() {
@@ -49,12 +61,33 @@ public class SimulationEditor {
         ballRepo = new BallRepo();
     }
 
-    public void drawArrow(Ball currentBall) {
-        double x = currentBall.getX();
-        double y = currentBall.getY();
+    public void drawVector(Ball ball) {
+        double x = ball.getX();
+        double veloX = ball.getVelocity().getX();
+        double veloY = ball.getVelocity().getY();
 
-        graphicsContext.setStroke(Color.RED);
-        graphicsContext.strokeLine(x,y,x+50,y+50);
+        double y = -(ball.getY() - canvas.getHeight());
 
+        graphicsContext.setLineWidth(1.2);
+        graphicsContext.setLineDashes(10, 5);
+        graphicsContext.setStroke(Color.BLACK);
+        graphicsContext.strokeLine(x, y, x + veloX, y - veloY);
+        //todo arrowHead
+//        graphicsContext.setFill(Color.RED);
+//
+//        double a = veloY/(veloX-x);
+//        double b = y-(veloY*x)/(veloX-x);
+//
+//        double xTop = (y-b)/a+20;
+//        double yTop = b-(veloY*x)/(veloX-x)+20;
+//
+//        graphicsContext.fillPolygon(new double[]{300, xTop, 312},
+//                new double[]{100, -yTop, 100}, 3);
+
+    }
+
+    public void drawAllVectors() {
+        for (Ball ball : ballRepo.getBalls())
+            drawVector(ball);
     }
 }

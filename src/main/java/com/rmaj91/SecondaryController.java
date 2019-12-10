@@ -67,27 +67,37 @@ public class SecondaryController implements Initializable {
     //=============================================================================================
     @FXML
     private void createBall(MouseEvent event) {
+
+        if (event.getButton().name().equals("PRIMARY")){
+            xFromClick = event.getSceneX();
+            yFromClick = -(event.getSceneY() - simulatorCanvas.getHeight());
+
+            if (xFromClick - ballRadius < 0)
+                xFromClick = ballRadius;
+            if (xFromClick + ballRadius > simulatorCanvas.getWidth())
+                xFromClick = simulatorCanvas.getWidth() - ballRadius;
+            if (yFromClick + ballRadius > simulatorCanvas.getHeight())
+                yFromClick = simulatorCanvas.getHeight() - ballRadius;
+
+            radiusLbl.setText(String.format("%.1f px", ballRadius));
+            speedVectorLbl.setText("0.0, 0.0");
+            ballCoordinatesLbl.setText(String.format("%.1f, %.1f", xFromClick, yFromClick));
+            Color color = colorPicker.getValue();
+            currentBall = new Ball(xFromClick, yFromClick, ballRadius, color);
+            simulationEditor.add(currentBall);
+//            simulationEditor.clearView();
+//            simulationEditor.drawAll();
+            System.out.println("Created: " + currentBall.toString());
+        }
         // todo kasowanie ball po kliknieciu SECONDARY
-        if (!event.getButton().name().equals("PRIMARY"))
-            return;
-        xFromClick = event.getSceneX();
-        yFromClick = -(event.getSceneY() - simulatorCanvas.getHeight());
+        else if(event.getButton().name().equals("SECONDARY")) {
+            xFromClick = event.getSceneX();
+            yFromClick = -(event.getSceneY() - simulatorCanvas.getHeight());
+            simulationEditor.remove(xFromClick,yFromClick);
+        }
 
-        if (xFromClick - ballRadius < 0)
-            xFromClick = ballRadius;
-        if (xFromClick + ballRadius > simulatorCanvas.getWidth())
-            xFromClick = simulatorCanvas.getWidth() - ballRadius;
-        if (yFromClick + ballRadius > simulatorCanvas.getHeight())
-            yFromClick = simulatorCanvas.getHeight() - ballRadius;
-
-        radiusLbl.setText(String.format("%.1f px", ballRadius));
-        speedVectorLbl.setText("0.0, 0.0");
-        ballCoordinatesLbl.setText(String.format("%.1f, %.1f", xFromClick, yFromClick));
-        Color color = colorPicker.getValue();
-        currentBall = new Ball(xFromClick, yFromClick, ballRadius, color);
-        simulationEditor.add(currentBall);
+        simulationEditor.clearView();
         simulationEditor.drawAll();
-        System.out.println("Created: " + currentBall.toString());
     }
 
 
@@ -108,7 +118,7 @@ public class SecondaryController implements Initializable {
 
             radiusLbl.setText(String.format("%.1f px", ballRadius));
             currentBall.setRadius(ballRadius);
-            simulationEditor.clearView();
+            //simulationEditor.clearView();
             simulationEditor.drawAll();
         }
     }
@@ -116,21 +126,23 @@ public class SecondaryController implements Initializable {
     @FXML
     private void setBallVelocity(MouseEvent event) {
         if (currentBall != null) {
-            double velocityX = -(xFromClick - event.getSceneX());
-            double velocityY = -(yFromClick + event.getSceneY() - simulatorCanvas.getHeight());
-            simulationEditor.drawArrow(currentBall);
+            double velocityX = xFromClick - event.getSceneX();
+            double velocityY = yFromClick + event.getSceneY() - simulatorCanvas.getHeight();
+            currentBall.getVelocity().setX(velocityX*6);
+            currentBall.getVelocity().setY(velocityY*6);
             speedVectorLbl.setText(String.format("%.1f, %.1f", velocityX, velocityY));
-            currentBall.getVelocity().setX(velocityX);
-            currentBall.getVelocity().setY(velocityY);
+            simulationEditor.clearView();
+            simulationEditor.drawAll();
+            simulationEditor.drawVector(currentBall);
         }
     }
 
 
     @FXML
     private void clearBallRef() {
-        simulationEditor.clearView();
         if (simulation.isSimulationFlag()){
             simulation.add(currentBall);
+            simulationEditor.clearView();
             simulationEditor.clearRepo();
             System.out.print("adding to simulator...");
         }
@@ -144,7 +156,8 @@ public class SecondaryController implements Initializable {
 
     @FXML
     private void resetBtnClicked() {
-
+        System.out.println("RESET");
+        System.out.println("======================================================");
         System.out.println("Editor: "+simulationEditor.getBallRepo().getBalls().toString());
         System.out.println("Sim: "+simulation.getBallRepo().getBalls().toString());
 
@@ -152,10 +165,12 @@ public class SecondaryController implements Initializable {
         simulationEditor.clearView();
         simulation.clearRepo();
         simulation.clearView();
-        System.out.println("Cleared canvas and balls repo");
 
+        System.out.println("------------------------------------------------------");
         System.out.println("Editor: "+simulationEditor.getBallRepo().getBalls().toString());
         System.out.println("Sim: "+simulation.getBallRepo().getBalls().toString());
+        System.out.println("======================================================");
+        System.out.println();
     }
 
     @FXML
@@ -164,15 +179,19 @@ public class SecondaryController implements Initializable {
             simulation.stop();
             simulationBtn.setText("Start Simulation");
         } else {
-            System.out.println("Editor: "+simulationEditor.getBallRepo().getBalls().toString());
-            System.out.println("Sim: "+simulation.getBallRepo().getBalls().toString());
+//            System.out.println("Editor: "+simulationEditor.getBallRepo().getBalls().toString());
+//            System.out.println("Sim: "+simulation.getBallRepo().getBalls().toString());
 
             simulation.addAll(simulationEditor.getBallRepo());
             simulationEditor.clearView();
             simulationEditor.clearRepo();
-
+            System.out.println("START/STOP");
+            System.out.println("======================================================");
             System.out.println("Editor: "+simulationEditor.getBallRepo().getBalls().toString());
+            System.out.println("------------------------------------------------------");
             System.out.println("Sim: "+simulation.getBallRepo().getBalls().toString());
+            System.out.println("======================================================");
+            System.out.println();
 
             simulation.start();
             simulationBtn.setText("Stop Simulation");
@@ -193,6 +212,10 @@ public class SecondaryController implements Initializable {
         setBackgroundSizeListeners();
         setEarthAccValueFactory();
         colorPicker.setValue(Color.DARKGREY);
+
+        earthAcceleration.valueProperty().addListener(e->{
+            Ball.setGlobalEarthAcceleration(earthAcceleration.getValue());
+        });
     }
 
 
@@ -222,7 +245,7 @@ public class SecondaryController implements Initializable {
 
     private void setEarthAccValueFactory() {
         SpinnerValueFactory.DoubleSpinnerValueFactory svf
-                = new SpinnerValueFactory.DoubleSpinnerValueFactory(-1000, 1000, 200, 1);
+                    = new SpinnerValueFactory.DoubleSpinnerValueFactory(-10000, 10000, 1000, 25);
         earthAcceleration.setValueFactory(svf);
     }
 
