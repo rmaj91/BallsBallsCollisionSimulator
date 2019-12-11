@@ -22,6 +22,7 @@ public class Simulation {
     public static final double LEFT_WALL_ABS = 0.9;
     public static final double RIGHT_WALL_ABS = 0.9;
     public static final double FLOOR_ABS = 0.8;
+    public static final double SEMI_FRICTION = 0.97;
     //=============================================================================================
     // Properties/Dependencies
     //=============================================================================================
@@ -30,8 +31,7 @@ public class Simulation {
     public static Canvas canvas;
     private GraphicsContext graphicsContext;
     private double earthAcceleration;
-    public static final double FPS = 60;
-    public static final double CALC_PER_SEC = 200;
+    public static final double FPS = 100;
     private Timeline timelineDraw;
     private AnimationTimer animationTimer;
     private long startNanoTime;
