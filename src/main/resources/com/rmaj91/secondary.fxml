@@ -90,12 +90,12 @@
                   </HBox>
                   <HBox fx:id="info">
                      <children>
-                        <Label text=" Number of obj's: ">
+                        <Label disable="true" text=" Number of obj's: ">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Label>
-                        <Label text="0">
+                        <Label disable="true" text="0">
                            <font>
                               <Font name="System Bold" size="16.0" />
                            </font>

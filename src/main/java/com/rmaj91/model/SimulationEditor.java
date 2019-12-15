@@ -19,8 +19,8 @@ public class SimulationEditor {
 
     public void remove(double x, double y) {
         for (Ball ball : ballRepo.getBalls()) {
-            double x1 = ball.getX();
-            double y1 = ball.getY();
+            double x1 = ball.getPx();
+            double y1 = ball.getPy();
             double distance = Math.sqrt((x1 - x) * (x1 - x) + (y1 - y) * (y1 - y));
             if (ball.getRadius() > distance) {
                 System.out.println("removing: " + ball);
@@ -39,8 +39,8 @@ public class SimulationEditor {
     public void draw(Ball ball) {
         graphicsContext.setFill(ball.getColor());
         double radius = ball.getRadius();
-        double yCavasCoordinate = -(ball.getY() - canvas.getHeight());
-        graphicsContext.fillOval(ball.getX() - radius, yCavasCoordinate - radius, radius * 2, radius * 2);
+        double yCavasCoordinate = -(ball.getPy() - canvas.getHeight());
+        graphicsContext.fillOval(ball.getPx() - radius, yCavasCoordinate - radius, radius * 2, radius * 2);
     }
 
     public void drawAll() {
@@ -63,13 +63,13 @@ public class SimulationEditor {
     }
 
     public void drawVector(Ball ball) {
-        double x = ball.getX();
-        double y = -(ball.getY() - canvas.getHeight());
+        double x = ball.getPx();
+        double y = -(ball.getPy() - canvas.getHeight());
         graphicsContext.setLineWidth(1.2);
         graphicsContext.setLineDashes(10, 5);
         graphicsContext.setStroke(Color.BLACK);
-        double x2 = x + ball.getVelocity().getX();
-        double y2 = y - ball.getVelocity().getY();
+        double x2 = x + ball.getVx();
+        double y2 = y - ball.getVy();
         graphicsContext.strokeLine(x, y, x2, y2);
 
         //todo arrowHead

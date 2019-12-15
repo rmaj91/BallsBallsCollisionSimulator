@@ -29,7 +29,7 @@
             <Insets top="140.0" />
          </StackPane.margin>
       </Button>
-      <Label text="github.com/rmaj91/CollisionSimulator" StackPane.alignment="BOTTOM_CENTER">
+      <Label text="github.com/rmaj91/BallsCollisionSimulator" StackPane.alignment="BOTTOM_CENTER">
          <font>
             <Font size="18.0" />
          </font>

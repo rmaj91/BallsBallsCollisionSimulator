@@ -8,39 +8,39 @@ public class Ball {
     //=============================================================================================
     // Static Properties
     //=============================================================================================
-    private static double E_ABSORPTION = 0.8;
-    public static double globalEarthAcceleration = 500;
+//    private static final double ENERGY_ABSORPTION = 1.0;
+    public static int EARTH_ACC = 0;
     //=============================================================================================
     // Properties
     //=============================================================================================
-    private double x;
-    private double y;
+    private double px;
+    private double py;
+    private double vx;
+    private double vy;
+    private double ax;
+    private double ay;
     private double radius;
     private int mass;
-    private Vector velocity;
     private Color color;
 
     //=============================================================================================
     // Constructors
     //=============================================================================================
-    public Ball(double x, double y, double radius, Color color) {
-        this.x = x;
-        this.y = y;
+    public Ball(double px, double py, double radius, Color color) {
+        this.px = px;
+        this.py = py;
         this.radius = radius;
         this.color = color;
         this.mass = (int) Math.pow(radius, 3);
-        this.velocity = new Vector(0, 0);
     }
 
     //=============================================================================================
     // Public Methods
     //=============================================================================================
 
-    public void moveBall(double milliseconds, BallRepo ballRepo) {
-        getNewBallState(milliseconds);
-        calculateNewVelocity(milliseconds);
-        checkWallsCollisions();
-        checkBallsCollision(ballRepo);
+    public void getNewBallState(double milliseconds, BallRepo ballRepo) {
+        getNewBallCoordinates(milliseconds);
+        getNewVelocities(milliseconds);
     }
 
     public void setRadius(double radius) {
@@ -53,131 +53,83 @@ public class Ball {
     // Getters/Setters
     //=============================================================================================
 
-    public void setX(double x) {
-        this.x = x;
+    public double getPx() {
+        return px;
     }
 
-    public void setY(double y) {
-        this.y = y;
+    public double getPy() {
+        return py;
     }
 
-    public Vector getVelocity() {
-        return velocity;
+    public double getVx() {
+        return vx;
+    }
+
+    public double getVy() {
+        return vy;
+    }
+
+    public double getAx() {
+        return ax;
+    }
+
+    public double getAy() {
+        return ay;
     }
 
     public double getRadius() {
         return radius;
     }
 
+    public int getMass() {
+        return mass;
+    }
+
     public Color getColor() {
         return color;
     }
 
-    public double getX() {
-        return x;
+    public void setPx(double px) {
+        this.px = px;
     }
 
-    public double getY() {
-        return y;
+    public void setPy(double py) {
+        this.py = py;
     }
 
-    public static void setGlobalEarthAcceleration(double globalEarthAcceleration) {
-        Ball.globalEarthAcceleration = globalEarthAcceleration;
+    public void setVx(double vx) {
+        this.vx = vx;
     }
 
-    public void setVelocity(Vector velocity) {
-        this.velocity = velocity;
+    public void setVy(double vy) {
+        this.vy = vy;
     }
 
-    @Override
-    public String toString() {
-        return "Ball{" +
-                "x=" + x +
-                ", y=" + y +
-                ", radius=" + radius +
-                ", mass=" + mass +
-                ", velocity=" + velocity +
-                ", color=" + color +
-                '}';
+    public void setAx(double ax) {
+        this.ax = ax;
     }
 
-
+    public void setAy(double ay) {
+        this.ay = ay;
+    }
     //=============================================================================================
     // Private Methods
     //=============================================================================================
 
-    // todo beta version of collisions
-    private void checkBallsCollision(BallRepo ballRepo) {
-        for (int i = 0; i < ballRepo.size(); i++)
-            for (int j = i + 1; j < ballRepo.size(); j++) {
-                Ball ball1 = ballRepo.get(i);
-                Ball ball2 = ballRepo.get(j);
-                double dx = ball1.getX() - ball2.getX();
-                double dy = ball1.getY() - ball2.getY();
-                double distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < ball1.radius + ball2.radius) {
 
-                    double overlap = -0.5 * (distance - ball1.radius - ball2.radius);
-
-//                    Vector vector = ball1.getVelocity();
-//                    ball1.setVelocity(ball2.getVelocity());
-//                    ball2.setVelocity(velocity);
-
-                }
-            }
+    private void getNewBallCoordinates(double milliseconds) {
+        px += vx * milliseconds / 1000;
+        py += vy * milliseconds / 1000;
     }
 
-
-    private void getNewBallState(double milliseconds) {
-        this.x += velocity.getX() * milliseconds / 1000;
-        this.y += velocity.getY() * milliseconds / 1000;
-    }
-
-    private void checkWallsCollisions() {
-        if (x < radius) {
-            leftWallContactHandler();
-        } else if (x > Simulation.getCanvas().getWidth() - radius) {
-            rightWallContactHandler();
+    private void getNewVelocities(double milliseconds) {
+        vx += ax * milliseconds / 1000;
+        vy += (ay - EARTH_ACC) * milliseconds / 1000;
+        //todo 2 its just test value, can change later
+        if (vx * vx + vy * vy < 5 && py == 0) {
+            vx = 0;
+            vy = 0;
         }
-//        if(y == radius)
-//            // semi rolling friction
-//            velocity.setX(velocity.getX()*0.999);
-        if (y < radius) {
-            floorContactHandler();
-        }
-
-
-    }
-
-    private void floorContactHandler() {
-        double newKineticEnY = Simulation.FLOOR_ABS * Ball.E_ABSORPTION * velocity.getY() * velocity.getY() * mass / 2;
-        double newVelocityY = Math.sqrt(newKineticEnY * 2 / mass);
-        velocity.setY(newVelocityY);
-//        if(velocity.getY()<50)
-//            velocity.setY(0);
-        y = radius;
-        velocity.setX(velocity.getX()*Simulation.SEMI_FRICTION);
-    }
-
-    private void rightWallContactHandler() {
-        double newKineticEnX = Simulation.RIGHT_WALL_ABS * Ball.E_ABSORPTION * velocity.getX() * velocity.getX() * mass / 2;
-        double newVelocityX = -Math.sqrt(newKineticEnX * 2 / mass);
-        velocity.setX(newVelocityX);
-        x = Simulation.getCanvas().getWidth() - radius;
-    }
-
-    private void leftWallContactHandler() {
-        double newKineticEnX = Simulation.LEFT_WALL_ABS * Ball.E_ABSORPTION * velocity.getX() * velocity.getX() * mass / 2;
-        double newVelocityX = Math.sqrt(newKineticEnX * 2 / mass);
-        velocity.setX(newVelocityX);
-        x = radius;
-    }
-
-    private void calculateNewVelocity(double milliseconds) {
-        if (y == radius && velocity.getY() > -50 && velocity.getY() < 50)
-            velocity.setY(0);
-        else
-            velocity.setY(velocity.getY() - globalEarthAcceleration * milliseconds / 1000);
     }
 
 }

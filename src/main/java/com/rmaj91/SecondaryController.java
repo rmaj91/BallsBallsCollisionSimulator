@@ -22,7 +22,7 @@ public class SecondaryController implements Initializable {
     public static double ballRadius = 20;
     public static final double MIN_BALL_RADIUS = 5;
     public static final double MAX_BALL_RADIUS = 100;
-
+    public static final int velocityMultiplier = 8;
 
     //=============================================================================================
     // JavaFX elements
@@ -48,7 +48,7 @@ public class SecondaryController implements Initializable {
     @FXML
     private Label speedVectorLbl;
     @FXML
-    private Spinner<Double> earthAcceleration;
+    private Spinner<Integer> earthAcceleration;
 
     //=============================================================================================
     // Properties
@@ -111,11 +111,12 @@ public class SecondaryController implements Initializable {
     @FXML
     private void setBallVelocity(MouseEvent event) {
         if (currentBall != null) {
-            int velocityMultiplier = 8;
+
             double velocityX = xFromClick - event.getSceneX();
             double velocityY = yFromClick + event.getSceneY() - simulatorCanvas.getHeight();
-            currentBall.getVelocity().setX(velocityX * velocityMultiplier);
-            currentBall.getVelocity().setY(velocityY * velocityMultiplier);
+
+            currentBall.setVx(velocityX * velocityMultiplier);
+            currentBall.setVy(velocityY * velocityMultiplier);
             speedVectorLbl.setText(String.format("%.1f, %.1f", velocityX*velocityMultiplier, velocityY*velocityMultiplier));
             simulationEditor.clearView();
             simulationEditor.drawAll();
@@ -173,9 +174,6 @@ public class SecondaryController implements Initializable {
         eartAccSpinnerListenerInit();
     }
 
-
-
-
     //=============================================================================================
     // Private Methods
     //=============================================================================================
@@ -183,8 +181,8 @@ public class SecondaryController implements Initializable {
         BallRepo ballRepo = simulationEditor.getBallRepo();
         boolean isBallFound = false;
         for (Ball ball : ballRepo.getBalls()) {
-            double x1 = ball.getX();
-            double y1 = ball.getY();
+            double x1 = ball.getPx();
+            double y1 = ball.getPy();
             double distance = Math.sqrt((x1 - xFromClick) * (x1 - xFromClick) + (y1 - yFromClick) * (y1 - yFromClick));
             if (ball.getRadius() + ballRadius > distance) {
                 isBallFound = true;
@@ -196,7 +194,7 @@ public class SecondaryController implements Initializable {
 
     private void eartAccSpinnerListenerInit() {
         earthAcceleration.valueProperty().addListener(e -> {
-            Ball.globalEarthAcceleration = earthAcceleration.getValue();
+            Ball.EARTH_ACC = earthAcceleration.getValue();
         });
     }
     private void xFromClickCorrect() {
@@ -226,8 +224,8 @@ public class SecondaryController implements Initializable {
     }
 
     private void setEarthAccValueFactory() {
-        SpinnerValueFactory.DoubleSpinnerValueFactory svf
-                = new SpinnerValueFactory.DoubleSpinnerValueFactory(-10000, 10000, Ball.globalEarthAcceleration, 25);
+        SpinnerValueFactory.IntegerSpinnerValueFactory svf
+                = new SpinnerValueFactory.IntegerSpinnerValueFactory(-10000, 10000, Ball.EARTH_ACC, 25);
         earthAcceleration.setValueFactory(svf);
     }
 
